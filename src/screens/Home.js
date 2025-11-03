@@ -1,36 +1,22 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import DynamicForm from '../components/DynamicForm';
+import {React, Component} from "react";
+import { View, Text, Pressable } from 'react-native';
+class Home extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        };
+    }
+    render() {
+        return (
+            <View>
+                <Text> Hello World </Text>
+                <Text> Mi primera app con React Native</Text>
+                <Pressable onPress={() => this.props.navigation.navigate('Login')}>
+                <Text> Presionar </Text>
+            </Pressable>
+        </View>
+        )
+    }
+};
 
-export default function Home() {
-  return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Pantalla Home</Text>
-        <DynamicForm />
-      </View>
-    </ScrollView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f6f8',
-  },
-  content: {
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100%',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#0b1620',
-  },
-});
-
-
+export default Home;
