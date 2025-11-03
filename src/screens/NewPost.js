@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 function Login() {
     return (
         <View>
-            <Text> Perfil </Text>
+            <Text> New post </Text>
         </View>
     );
 }

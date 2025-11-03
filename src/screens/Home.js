@@ -9,10 +9,9 @@ class Home extends Component {
     render() {
         return (
             <View>
-                <Text> Hello World </Text>
-                <Text> Mi primera app con React Native</Text>
+                <Text> Home </Text>
                 <Pressable onPress={() => this.props.navigation.navigate('Login')}>
-                <Text> Presionar </Text>
+                <Text> login? </Text>
             </Pressable>
         </View>
         )
