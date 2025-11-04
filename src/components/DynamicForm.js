@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { auth, db } from '../firebase/config';
 
 class DynamicForm extends Component {
   constructor(props) {
@@ -10,9 +11,16 @@ class DynamicForm extends Component {
   }
 
   onSubmit() {
-    console.log('Comentario enviado:', {
-      comentario: this.state.comentario
-    });
+    db.collection('posts').add({
+      author: auth.currentUser.email,
+      comentario: this.state.comentario,
+      createdAt: Date.now()
+    })
+      .then(() => {
+        this.setState({ comentario: '' });
+        console.log('comentario agregado al firestore coleccion posts')
+      })
+      .catch(e => console.log(e))
   }
 
 
@@ -22,19 +30,19 @@ class DynamicForm extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Formulario de Comentarios</Text>
-        
-        <TextInput 
-          style={styles.field} 
+
+        <TextInput
+          style={styles.field}
           keyboardType='default'
           placeholder='Escribe tu comentario aquí...'
           multiline={true}
           numberOfLines={4}
-          onChangeText={text => this.setState({comentario: text})}
-          value={this.state.comentario} 
+          onChangeText={text => this.setState({ comentario: text })}
+          value={this.state.comentario}
         />
-        
+
         <Pressable onPress={() => this.onSubmit()} style={styles.button}>
-          <Text style={styles.buttonText}>Enviar</Text> 
+          <Text style={styles.buttonText}>Enviar</Text>
         </Pressable>
       </View>
     );
@@ -92,4 +100,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DynamicForm;
+export default DynamicForm;

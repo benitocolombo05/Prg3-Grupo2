@@ -1,5 +1,6 @@
 import {React, Component} from "react";
 import { View, Text, Pressable } from 'react-native';
+import Posteos from "../components/Posteos";
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -13,6 +14,7 @@ class Home extends Component {
                 <Pressable onPress={() => this.props.navigation.navigate('Login')}>
                 <Text> login? </Text>
             </Pressable>
+            <Posteos />
         </View>
         )
     }

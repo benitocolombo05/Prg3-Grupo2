@@ -1,10 +1,16 @@
-import React from "react";
-import { View, Text } from 'react-native';
-function Login() {
+import React, { Component } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { db } from '../firebase/config';
+import DynamicForm from '../components/DynamicForm';
+
+function NewPost() {
     return (
         <View>
-            <Text> New post </Text>
+            <Text>New Post </Text>
+            <DynamicForm /> 
         </View>
     );
 }
-export default Login;
+    
+
+export default NewPost;
