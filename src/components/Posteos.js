@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { db } from '../firebase/config';
+import { auth, db } from '../firebase/config';
+import firebase from 'firebase';
 
 class Posteos extends Component {
   constructor(props) {
@@ -28,11 +29,17 @@ class Posteos extends Component {
       }
     )
   }
-  onSubmit() {
-
-
-    
+  onSubmit(pId, Likeado) {
+  if (Likeado) {
+    db.collection('posts').doc(pId).update({
+      likes: firebase.firestore.FieldValue.arrayRemove(auth.currentUser.email)
+    })
+  } else {
+    db.collection('posts').doc(pId).update({
+      likes: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.email)
+    })
   }
+}
 
 
   render() {
@@ -48,9 +55,11 @@ class Posteos extends Component {
     return (
       <View style={styles.container}>
         {
-          this.state.posteos.map(p =>
-            <View key={p.id} style={styles.card}>
-              <Text style={styles.author}>
+          this.state.posteos.map(p => {
+            let Likeado = p.data.likes && p.data.likes.includes(auth.currentUser.email);
+            return (
+              <View key={p.id} style={styles.card}>
+                <Text style={styles.author}>
                 {p.data.author}
               </Text>
               <Text style={styles.text}>
@@ -60,13 +69,16 @@ class Posteos extends Component {
                 {new Date(p.data.createdAt).toLocaleString()} {/* chat me dijo de hacerlo asi para que se vea bien */}
               </Text>
 
-              <Pressable onPress={() => this.onSubmit()} style={styles.button}>
-                <Text style={styles.buttonText}>Me gusta</Text>
+              <Pressable onPress={() => this.onSubmit(p.id, Likeado)} style={styles.button}>
+                {Likeado ? 
+                  <Text style={styles.buttonText}>No me gusta, {p.data.likes? p.data.likes.length : 0}</Text>
+                  : <Text style={styles.buttonText}>Me gusta, {p.data.likes? p.data.likes.length : 0}</Text>
+                  }
               </Pressable>
 
             </View>
           )
-        }
+        })}
       </View>
     );
   }
