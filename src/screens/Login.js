@@ -13,7 +13,7 @@ class Login extends Component {
   }
   componentDidMount() {
     if(auth.currentUser){
-      this.props.navigation.navigate('Home');
+      this.props.navigation.navigate('HomeMenu');
     }
   }
 

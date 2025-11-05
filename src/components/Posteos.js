@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { db } from '../firebase/config';
 
 class Posteos extends Component {
@@ -15,7 +15,7 @@ class Posteos extends Component {
     db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(
       docs => {
         let posts = [];
-        docs.forEach( doc => {
+        docs.forEach(doc => {
           posts.push({
             id: doc.id,
             data: doc.data()
@@ -28,6 +28,12 @@ class Posteos extends Component {
       }
     )
   }
+  onSubmit() {
+
+
+    
+  }
+
 
   render() {
 
@@ -53,6 +59,11 @@ class Posteos extends Component {
               <Text style={styles.time}>
                 {new Date(p.data.createdAt).toLocaleString()} {/* chat me dijo de hacerlo asi para que se vea bien */}
               </Text>
+
+              <Pressable onPress={() => this.onSubmit()} style={styles.button}>
+                <Text style={styles.buttonText}>Me gusta</Text>
+              </Pressable>
+
             </View>
           )
         }
@@ -87,4 +98,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Posteos;
+export default Posteos;

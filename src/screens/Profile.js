@@ -1,83 +1,61 @@
-import React, { Component } from "react";
-import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
-import { db, auth } from "../firebase/config";
+import React, { Component } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { db, auth } from '../firebase/config';
 
 class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
-      posts: [],
-      loading: true,
+      posteos: [],
+      loading: true
     };
   }
 
   componentDidMount() {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      this.setState({ email: currentUser.email });
-
-      db.collection("posts")
-        .where("owner", "==", currentUser.email)
-        .onSnapshot(
-          (docs) => {
-            let posts = [];
-            docs.forEach((doc) => {
-              posts.push({
-                id: doc.id,
-                description: doc.data().description,
-                likes: doc.data().likes,
-              });
-            });
-            this.setState({ posts, loading: false });
-          },
-          (error) => {
-            console.log("ERROR LEYENDO POSTS:", error.message);
-            this.setState({ loading: false });
-          }
-        );
-    }
-  }
-
-  onLogout() {
-    auth.signOut()
-      .then(() => {
-        this.props.navigation.navigate("Login");
-      })
-      .catch((error) => {
-        console.log("ERROR AL DESLOGUEARSE:", error.message);
-      });
-  }
-
-  renderItem({ item }) {
-    return (
-      <View style={styles.postContainer}>
-        <Text style={styles.postDescription}>{item.description}</Text>
-        <Text style={styles.postLikes}>Likes: {item.likes.length}</Text>
-      </View>
-    );
+    db.collection('posts').where('author', '==', auth.currentUser.email).onSnapshot(
+      docs => {
+        let posts = [];
+        docs.forEach( doc => {
+          posts.push({
+            id: doc.id,
+            data: doc.data()
+          })
+        })
+        this.setState({
+          posteos: posts,
+          loading: false
+        })
+      }
+    )
   }
 
   render() {
+
+    if (this.state.loading) {
+      return (
+        <View style={styles.container}>
+          <Text>Cargando...</Text>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Mi Perfil</Text>
-        <Text style={styles.email}>Email: {this.state.email}</Text>
-
-        <Pressable style={styles.logoutButton} onPress={() => this.onLogout()}>
-          <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
-        </Pressable>
-
-        <Text style={styles.subtitle}>Mis Posteos</Text>
-        {this.state.loading ? (
-          <Text>Cargando posteos...</Text>
-        ) : (
-          <FlatList
-            data={this.state.posts}
-            keyExtractor={(item) => item.id}
-            renderItem={(item) => this.renderItem(item)}
-          />
-        )}
+        {
+          this.state.posteos.map(p =>
+            <View key={p.id} style={styles.card}>
+              <Text style={styles.author}>
+                {p.data.author}
+              </Text>
+              <Text style={styles.text}>
+                {p.data.comentario}
+              </Text>
+              <Text style={styles.time}>
+                {new Date(p.data.createdAt).toLocaleString()} {/* chat me dijo de hacerlo asi para que se vea bien */}
+              </Text>
+            </View>
+          )
+        }
       </View>
     );
   }
@@ -85,52 +63,28 @@ class Profile extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#f5f6f8",
+    padding: 12
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  email: {
-    fontSize: 16,
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  logoutButton: {
-    backgroundColor: "#28a745",
+  card: {
+    backgroundColor: '#fff',
+    marginBottom: 10,
     padding: 12,
-    borderRadius: 6,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  logoutButtonText: {
-    color: "white",
-    fontWeight: "600",
-  },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 12,
-  },
-  postContainer: {
-    padding: 16,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    marginBottom: 12,
+    borderColor: '#ccc'
   },
-  postDescription: {
+  author: {
+    fontWeight: 'bold',
+    marginBottom: 6
+  },
+  text: {
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 6
   },
-  postLikes: {
-    fontSize: 14,
-    color: "#555",
-  },
+  time: {
+    fontSize: 12,
+    color: '#666'
+  }
 });
 
 export default Profile;

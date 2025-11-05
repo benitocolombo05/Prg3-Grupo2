@@ -6,25 +6,26 @@ class DynamicForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      comentario: ''
+      comentario: '',
     };
   }
 
   onSubmit() {
+
     db.collection('posts').add({
       author: auth.currentUser.email,
       comentario: this.state.comentario,
+      likes: [],
       createdAt: Date.now()
     })
       .then(() => {
-        this.setState({ comentario: '' });
-        console.log('comentario agregado al firestore coleccion posts')
+        this.setState({
+          comentario: '',
+        });
+        console.log('comentario agregado al firestore coleccion posts');
       })
       .catch(e => console.log(e))
   }
-
-
-
 
   render() {
     return (
@@ -40,7 +41,6 @@ class DynamicForm extends Component {
           onChangeText={text => this.setState({ comentario: text })}
           value={this.state.comentario}
         />
-
         <Pressable onPress={() => this.onSubmit()} style={styles.button}>
           <Text style={styles.buttonText}>Enviar</Text>
         </Pressable>
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     fontSize: 16,
     textAlignVertical: 'top',
-    minHeight: 100,
+    minHeight: 40, 
   },
   button: {
     backgroundColor: '#55B7E6',
@@ -85,19 +85,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#0b1620',
     fontWeight: '600',
-  },
-  dataDisplay: {
-    backgroundColor: '#e8f4fd',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  dataTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#0b1620',
-  },
+  }
 });
 
-export default DynamicForm;
+export default DynamicForm;
