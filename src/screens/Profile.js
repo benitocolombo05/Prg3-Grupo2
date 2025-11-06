@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable} from 'react-native';
 import { db, auth } from '../firebase/config';
 
 class Profile extends Component {
@@ -7,11 +7,18 @@ class Profile extends Component {
     super(props);
     this.state = {
       posteos: [],
-      loading: true
+      loading: true,
+      email: '',
     };
   }
 
   componentDidMount() {
+    if (auth.currentUser) {
+      this.setState({
+        email: auth.currentUser.email,
+      });
+    
+
     db.collection('posts').where('author', '==', auth.currentUser.email).onSnapshot(
       docs => {
         let posts = [];
@@ -27,6 +34,10 @@ class Profile extends Component {
         })
       }
     )
+  }}
+
+  Logout() {
+    auth.signOut().then(() => this.props.navigation.navigate('Login'));
   }
 
   render() {
@@ -41,6 +52,13 @@ class Profile extends Component {
 
     return (
       <View style={styles.container}>
+        
+        <Text style={styles.title}>Mi Perfil</Text>
+        <Text style={styles.info}>Email: {this.state.email}</Text>
+        <Pressable style={styles.button} onPress={() => this.Logout()}>
+          <Text style={styles.buttonText}>Cerrar sesión</Text>
+        </Pressable>
+
         {
           this.state.posteos.map(p =>
             <View key={p.id} style={styles.card}>
@@ -64,6 +82,28 @@ class Profile extends Component {
 const styles = StyleSheet.create({
   container: {
     padding: 12
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  info: {
+    fontSize: 16,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#28a745',
+    padding: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: '600',
   },
   card: {
     backgroundColor: '#fff',
