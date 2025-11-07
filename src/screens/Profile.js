@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Pressable} from 'react-native';
+import { View, Text, StyleSheet, Pressable, FlatList} from 'react-native';
 import { db, auth } from '../firebase/config';
+import firebase from 'firebase';
 
 class Profile extends Component {
   constructor(props) {
@@ -36,6 +37,18 @@ class Profile extends Component {
     )
   }}
 
+  onSubmit(pId, Likeado) {
+      if (Likeado) {
+        db.collection('posts').doc(pId).update({
+          likes: firebase.firestore.FieldValue.arrayRemove(auth.currentUser.email)
+        })
+      } else {
+        db.collection('posts').doc(pId).update({
+          likes: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.email)
+        })
+      }
+    }
+
   Logout() {
     auth.signOut().then(() => this.props.navigation.navigate('Login'));
   }
@@ -59,21 +72,32 @@ class Profile extends Component {
           <Text style={styles.buttonText}>Cerrar sesión</Text>
         </Pressable>
 
-        {
-          this.state.posteos.map(p =>
-            <View key={p.id} style={styles.card}>
-              <Text style={styles.author}>
-                {p.data.author}
-              </Text>
-              <Text style={styles.text}>
-                {p.data.comentario}
-              </Text>
-              <Text style={styles.time}>
-                {new Date(p.data.createdAt).toLocaleString()} {/* chat me dijo de hacerlo asi para que se vea bien */}
-              </Text>
-            </View>
-          )
-        }
+        <FlatList
+                  data={this.state.posteos}
+                  keyExtractor={(p) => p.id}
+                  contentContainerStyle={styles.container}
+                  renderItem={({ item: p }) => {
+                    let Likeado = p.data.likes && p.data.likes.includes(auth.currentUser.email);
+                    return (
+                      <View style={styles.card}>
+                        <Text style={styles.author}>{p.data.author}</Text>
+                        <Text style={styles.text}>{p.data.comentario}</Text>
+                        <Text style={styles.time}>{new Date(p.data.createdAt).toLocaleString()}</Text>
+        
+                        <Pressable onPress={() => this.onSubmit(p.id, Likeado)}>
+                          <Text>
+                            {Likeado ? `No me gusta, ${p.data.likes ? p.data.likes.length : 0}`
+                              : `Me gusta, ${p.data.likes ? p.data.likes.length : 0}`}
+                          </Text>
+                        </Pressable>
+
+                        <Pressable onPress={() => this.props.navigation.navigate('AddComment', { postId: p.id })}>
+                          <Text>Comentar</Text>
+                        </Pressable>
+                      </View>
+                    );
+                  }}
+                />
       </View>
     );
   }

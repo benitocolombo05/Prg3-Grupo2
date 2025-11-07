@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { React, Component } from "react";
+import { View, Text, Pressable, FlatList } from 'react-native';
 import { db, auth } from '../firebase/config';
 import firebase from 'firebase';
-import { StyleSheet } from "react-native";  
+import { StyleSheet } from "react-native";
+import { ActivityIndicator } from "react-native-web";
 
 class Home extends Component {
   constructor(props) {
@@ -14,9 +15,9 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    if(!auth.currentUser){
-        this.props.navigation.navigate('Login');
-      }
+    if (!auth.currentUser) {
+      this.props.navigation.navigate('Login');
+    }
     db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(
       docs => {
         let posts = [];
@@ -34,16 +35,16 @@ class Home extends Component {
     )
   }
   onSubmit(pId, Likeado) {
-  if (Likeado) {
-    db.collection('posts').doc(pId).update({
-      likes: firebase.firestore.FieldValue.arrayRemove(auth.currentUser.email)
-    })
-  } else {
-    db.collection('posts').doc(pId).update({
-      likes: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.email)
-    })
+    if (Likeado) {
+      db.collection('posts').doc(pId).update({
+        likes: firebase.firestore.FieldValue.arrayRemove(auth.currentUser.email)
+      })
+    } else {
+      db.collection('posts').doc(pId).update({
+        likes: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.email)
+      })
+    }
   }
-}
 
 
   render() {
@@ -51,48 +52,51 @@ class Home extends Component {
     if (this.state.loading) {
       return (
         <View style={styles.container}>
-          <Text>Cargando...</Text>
+          <ActivityIndicator size="large" color="#0000ff" position="absolute-center"/>
         </View>
       );
     }
-
+    if (auth.currentUser) {
     return (
+
       <View style={styles.container}>
-        {
-          this.state.posteos.map(p => {
+        
+        <FlatList
+          data={this.state.posteos}
+          keyExtractor={(p) => p.id}
+          contentContainerStyle={styles.container}
+          renderItem={({ item: p }) => {
             let Likeado = p.data.likes && p.data.likes.includes(auth.currentUser.email);
             return (
-              <View key={p.id} style={styles.card}>
-                <Text style={styles.author}>
-                {p.data.author}
-              </Text>
-              <Text style={styles.text}>
-                {p.data.comentario}
-              </Text>
-              <Text style={styles.time}>
-                {new Date(p.data.createdAt).toLocaleString()} {/* chat me dijo de hacerlo asi para que se vea bien */}
-              </Text>
+              <View style={styles.card}>
+                <Text style={styles.author}>{p.data.author}</Text>
+                <Text style={styles.text}>{p.data.comentario}</Text>
+                <Text style={styles.time}>{new Date(p.data.createdAt).toLocaleString()}</Text>
 
-              <Pressable onPress={() => this.onSubmit(p.id, Likeado)} style={styles.button}>
-                {Likeado ? 
-                  <Text style={styles.buttonText}>No me gusta, {p.data.likes? p.data.likes.length : 0}</Text>
-                  : <Text style={styles.buttonText}>Me gusta, {p.data.likes? p.data.likes.length : 0}</Text>
-                  }
-              </Pressable>
-              <Pressable onPress={() => this.props.navigation.navigate('AddComment', { postId: p.id })} style={styles.button}>
-                <Text style={styles.buttonText}>Comentar</Text>
-              </Pressable>
-            </View>
-          )
-        })}
+                <Pressable onPress={() => this.onSubmit(p.id, Likeado)} style={styles.button}>
+                <Text>
+                            {Likeado ? `No me gusta, ${p.data.likes ? p.data.likes.length : 0}`
+                              : `Me gusta, ${p.data.likes ? p.data.likes.length : 0}`}
+                          </Text>
+                </Pressable>
+
+                <Pressable onPress={() => this.props.navigation.navigate('AddComment', { postId: p.id })}style={styles.button}>
+                  <Text style={styles.buttonText}>Comentar</Text>
+                </Pressable>
+              </View>
+            );
+          }}
+        />
       </View>
-    );
+    );}
   }
+  
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 12
+    padding: 12,
+    flex: 1,
   },
   card: {
     backgroundColor: '#fff',

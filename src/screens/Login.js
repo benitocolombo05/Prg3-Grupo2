@@ -12,9 +12,7 @@ class Login extends Component {
     };
   }
   componentDidMount() {
-    if(auth.currentUser){
-      this.props.navigation.navigate('HomeMenu');
-    }
+
   }
 
   onSubmit() {

@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { auth, db } from '../firebase/config';
 import firebase from 'firebase';
+import { FlatList } from 'react-native-web';
 
 class AddComment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      comentario: '',
+      comentarios: [],
+      posteo: null,
       postId: this.props.route.params.postId
     };
   }
@@ -15,13 +17,17 @@ class AddComment extends Component {
     if (!auth.currentUser) {
       this.props.navigation.navigate('Login');
     };
-    
-
+    db.collection('posts').doc(this.state.postId).onSnapshot(doc => {
+      if (doc.exists) {
+        console.log(doc.data());
+        this.setState({ posteo: doc.data() });
+      }
+    })
   }
 
   onSubmit() {
 
-    db.collection('posts').doc(postId).update({
+    db.collection('posts').doc(this.state.postId).update({
       comentarios: firebase.firestore.FieldValue.arrayUnion({
         author: auth.currentUser.email,
         comentario: this.state.comentario,
@@ -36,21 +42,46 @@ class AddComment extends Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-        <TextInput
-          style={styles.field}
-          placeholder="Escribe un comentario..."
-          multiline={true}
-          numberOfLines={4}
-          onChangeText={text => this.setState({ comentario: text })}
-          value={this.state.comentario}
-        />
-        <Pressable onPress={() => this.onSubmit()} style={styles.button}>
-          <Text style={styles.buttonText}>Comentar</Text>
-        </Pressable>
-      </View>
-    );
+    if (this.state.posteo) {
+      console.log(this.state.posteo);
+      let Likeado = this.state.posteo.likes && this.state.posteo.likes.includes(auth.currentUser.email);
+      return (
+        <View style={styles.container}>
+          <View style={[styles.card, {border: '2px solid gray'}]}>
+            <Text style={styles.author}>{this.state.posteo.author}</Text>
+            <Text style={styles.text}>{this.state.posteo.comentario}</Text>
+            <Text style={styles.time}>{new Date(this.state.posteo.createdAt).toLocaleString()}</Text>
+          </View>
+          <Text>Comentarios:</Text>
+          <FlatList
+            data={this.state.posteo.comentarios}
+            keyExtractor={(c) => c.id}
+            contentContainerStyle={styles.container}
+            renderItem={({ item: c }) => {
+              return (
+                <View style={[styles.card, {margin: 1}]}>
+                  <Text style={styles.author}>{c.author}</Text>
+                  <Text style={styles.text}>{c.comentario}</Text>
+                  <Text style={styles.time}>{new Date(c.createdAt).toLocaleString()}</Text>
+                </View>
+              )
+            }}
+          />
+
+          <TextInput
+            style={styles.field}
+            placeholder="Escribe un comentario..."
+            multiline={true}
+            numberOfLines={2}
+            onChangeText={text => this.setState({ comentario: text })}
+            value={this.state.comentario}
+          />
+          <Pressable onPress={() => this.onSubmit()} style={styles.button}>
+            <Text style={styles.buttonText}>Comentar</Text>
+          </Pressable>
+        </View>
+      );
+    }
   }
 }
 
@@ -60,6 +91,26 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#f9f9f9',
     borderRadius: 8,
+  },
+  card: {
+    backgroundColor: '#fff',
+    marginBottom: 10,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc'
+  },
+  author: {
+    fontWeight: 'bold',
+    marginBottom: 6
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 6
+  },
+  time: {
+    fontSize: 12,
+    color: '#666'
   },
   field: {
     borderWidth: 1,
