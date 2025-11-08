@@ -30,12 +30,12 @@ class DynamicForm extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Formulario de Comentarios</Text>
+        <Text style={styles.title}>Postea un Tweet</Text>
 
         <TextInput
           style={styles.field}
           keyboardType='default'
-          placeholder='Escribe tu comentario aquí...'
+          placeholder='Escribe tu posteo aqui...'
           multiline={true}
           numberOfLines={4}
           onChangeText={text => this.setState({ comentario: text })}

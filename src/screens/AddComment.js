@@ -44,7 +44,6 @@ class AddComment extends Component {
   render() {
     if (this.state.posteo) {
       console.log(this.state.posteo);
-      let Likeado = this.state.posteo.likes && this.state.posteo.likes.includes(auth.currentUser.email);
       return (
         <View style={styles.container}>
           <View style={[styles.card, {border: '2px solid gray'}]}>

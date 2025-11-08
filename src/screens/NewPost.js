@@ -6,7 +6,6 @@ import DynamicForm from '../components/DynamicForm';
 function NewPost() {
     return (
         <View>
-            <Text>New Post </Text>
             <DynamicForm /> 
         </View>
     );
