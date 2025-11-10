@@ -14,11 +14,6 @@ class Register extends Component {
             error: '',
         };
     }
-    componentDidMount() {
-        if (auth.currentUser) {
-            this.props.navigation.navigate('HomeMenu');
-        }
-    }
 
     onSubmit() {
         if (!this.state.email.includes('@')) {
@@ -40,24 +35,24 @@ class Register extends Component {
         auth.createUserWithEmailAndPassword(email, password)
             .then(response => {
                 this.setState({ registred: true });
-                this.props.navigation.navigate('Login');
                 console.log('usuario registrado:', {
                     email: this.state.email,
                     username: this.state.username,
                     password: this.state.password
                 });
-                 db.collection("users").add({
-            username: this.state.username,
-            email: this.state.email,
-        })
-        .then(() => {
-            console.log('Usuario agregado a la colección users');
-        })
-        .catch(e => console.log(e));
+                db.collection("users").add({
+                    username: this.state.username,
+                    email: this.state.email,
+                })
+                    .then(() => {
+                        console.log('Usuario agregado a la colección users');
+                        auth.signOut().then(() => this.props.navigation.navigate('Login'));
+                    })
+                    .catch(e => console.log(e));
             })
             .catch(error => { this.setState({ error: error.message }) });
 
-       
+
     }
 
     render() {
@@ -95,7 +90,7 @@ class Register extends Component {
                     </Pressable>
                     {this.state.error !== '' ?
                         <Text >{this.state.error}</Text>
-                    : null}
+                        : null}
                 </View>
             </View>
         );

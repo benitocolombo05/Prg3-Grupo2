@@ -11,13 +11,6 @@ class Login extends Component {
             error: '',
         };
     }
-    componentDidMount() {
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                this.props.navigation.navigate('HomeMenu');
-            }
-        });
-    }
 
     onSubmit() {
         this.login(this.state.email, this.state.password);
@@ -35,7 +28,7 @@ class Login extends Component {
                 this.props.navigation.navigate('HomeMenu');
             })
             .catch(error => {
-                this.setState({ error: error.message });// revisar esto dsps xq trae un error muy largo
+                this.setState({ error: error.message });
             });
     }
 

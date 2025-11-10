@@ -15,9 +15,6 @@ class AddComment extends Component {
     };
   }
   componentDidMount() {
-    if (!auth.currentUser) {
-      this.props.navigation.navigate('Login');
-    };
     db.collection('posts').doc(this.state.postId).onSnapshot(doc => {
       if (doc.exists) {
         console.log(doc.data());
@@ -90,6 +87,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f9f9f9',
     borderRadius: 8,
+    flex: 1,
+    width: '100%',
   },
   card: {
     backgroundColor: '#fff',

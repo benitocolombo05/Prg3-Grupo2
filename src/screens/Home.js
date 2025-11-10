@@ -16,9 +16,6 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    if (!auth.currentUser) {
-      this.props.navigation.navigate('Login');
-    }
     db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(
       docs => {
         let posts = [];
@@ -52,8 +49,8 @@ class Home extends Component {
 
     if (this.state.loading) {
       return (
-        <View style={styles.container}>
-          <ActivityIndicator size="large" color="#0000ff" position="absolute-center" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
         </View>
       );
     }
@@ -92,10 +89,7 @@ class Home extends Component {
                         <Text>{p.data.likes ? p.data.likes.length : null}</Text>
                       </View>
                     </Pressable>
-                    <Pressable onPress={() => this.props.navigation.navigate('HomeStack', {
-                      screen: 'AddComment',
-                      params: { postId: p.id }
-                    })} style={styles.button}>
+                    <Pressable onPress={() => this.props.navigation.navigate('AddComment', { postId: p.id })} style={styles.button}>
                       <Image
                         source={require('../../assets/Comment.png')}
                         style={{ width: 20, height: 20, marginLeft: 6 }}
@@ -118,6 +112,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
   card: {
     backgroundColor: '#fff',
     marginBottom: 10,
@@ -142,4 +141,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Home;
+export default Home;

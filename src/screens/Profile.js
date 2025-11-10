@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Pressable, FlatList, Image } from 'react-native
 import { db, auth } from '../firebase/config';
 import firebase from 'firebase';
 import Header from "../components/Header";
+import AddComment from './AddComment';
+import { ActivityIndicator } from 'react-native-web';
 
 class Profile extends Component {
     constructor(props) {
@@ -65,11 +67,11 @@ class Profile extends Component {
     render() {
 
         if (this.state.loading) {
-            return (
-                <View style={styles.container}>
-                    <Text>Cargando...</Text>
+              return (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color="#0000ff" />
                 </View>
-            );
+              );
         }
 
         return (
@@ -115,12 +117,7 @@ class Profile extends Component {
                                             <Text>{p.data.likes ? p.data.likes.length : null}</Text>
                                         </View>
                                     </Pressable>
-                                    <Pressable onPress={() => this.props.navigation.navigate('AddComment', { postId: p.id })}> {/* NO SE XQ NO ANDA ESTE NAVIGATE */}
-                                        <Image
-                                            source={require('../../assets/Comment.png')}
-                                            style={{ width: 20, height: 20, marginLeft: 6 }}
-                                        />
-                                    </Pressable>
+
                                 </View>
                                 <Text style={styles.time}>{new Date(p.data.createdAt).toLocaleString()}</Text>
                             </View>
@@ -136,6 +133,11 @@ const styles = StyleSheet.create({
     container: {
         padding: 12
     },
+    loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
     title: {
         fontSize: 24,
         fontWeight: 'bold',
