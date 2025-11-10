@@ -3,6 +3,7 @@ import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { auth, db } from '../firebase/config';
 import firebase from 'firebase';
 import { FlatList } from 'react-native-web';
+import Header from "../components/Header";
 
 class AddComment extends Component {
   constructor(props) {
@@ -46,6 +47,7 @@ class AddComment extends Component {
       console.log(this.state.posteo);
       return (
         <View style={styles.container}>
+          <Header />
           <View style={[styles.card, {border: '2px solid gray'}]}>
             <Text style={styles.author}>{this.state.posteo.author}</Text>
             <Text style={styles.text}>{this.state.posteo.comentario}</Text>
@@ -58,7 +60,7 @@ class AddComment extends Component {
             contentContainerStyle={styles.container}
             renderItem={({ item: c }) => {
               return (
-                <View style={[styles.card, {margin: 1}]}>
+                <View style={[styles.card, {margin: 5}]}>
                   <Text style={styles.author}>{c.author}</Text>
                   <Text style={styles.text}>{c.comentario}</Text>
                   <Text style={styles.time}>{new Date(c.createdAt).toLocaleString()}</Text>
@@ -86,8 +88,6 @@ class AddComment extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 10,
-    padding: 10,
     backgroundColor: '#f9f9f9',
     borderRadius: 8,
   },
@@ -97,7 +97,8 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ccc'
+    borderColor: '#ccc',
+    margin: 10,
   },
   author: {
     fontWeight: 'bold',
@@ -131,4 +132,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddComment;
+export default AddComment;

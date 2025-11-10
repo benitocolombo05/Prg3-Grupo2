@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Pressable, FlatList, Image } from 'react-native';
 import { db, auth } from '../firebase/config';
 import firebase from 'firebase';
+import Header from "../components/Header";
 
 class Profile extends Component {
     constructor(props) {
@@ -179,4 +180,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Profile;
+export default Profile;

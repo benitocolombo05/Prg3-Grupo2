@@ -49,7 +49,7 @@ class Home extends Component {
 
 
   render() {
-    
+
     if (this.state.loading) {
       return (
         <View style={styles.container}>
@@ -60,6 +60,7 @@ class Home extends Component {
     if (auth.currentUser) {
       return (
         <View style={styles.container}>
+          <Header />
 
           <FlatList
             data={this.state.posteos}
@@ -68,6 +69,7 @@ class Home extends Component {
             renderItem={({ item: p }) => {
               let Likeado = p.data.likes && p.data.likes.includes(auth.currentUser.email);
               return (
+
                 <View style={styles.card}>
                   <Text style={styles.author}>{p.data.author}</Text>
                   <Text style={styles.text}>{p.data.comentario}</Text>
@@ -76,21 +78,24 @@ class Home extends Component {
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, marginBottom: 4 }}>
                     <Pressable onPress={() => this.onSubmit(p.id, Likeado)} style={styles.button}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {Likeado ? (
-                        <Image
-                          source={require('../../assets/Like.png')}
-                          style={{ width: 20, height: 20, marginRight: 2 }}
-                        />
-                      ) : (
-                        <Image
-                          source={require('../../assets/NoLike.png')}
-                          style={{ width: 20, height: 20, marginRight: 2 }}
-                        />
-                      )}
-                      <Text>{p.data.likes ? p.data.likes.length : null}</Text>
+                        {Likeado ? (
+                          <Image
+                            source={require('../../assets/Like.png')}
+                            style={{ width: 20, height: 20, marginRight: 2 }}
+                          />
+                        ) : (
+                          <Image
+                            source={require('../../assets/NoLike.png')}
+                            style={{ width: 20, height: 20, marginRight: 2 }}
+                          />
+                        )}
+                        <Text>{p.data.likes ? p.data.likes.length : null}</Text>
                       </View>
                     </Pressable>
-                    <Pressable onPress={() => this.props.navigation.navigate('AddComment', { postId: p.id })} style={styles.button}>
+                    <Pressable onPress={() => this.props.navigation.navigate('HomeStack', {
+                      screen: 'AddComment',
+                      params: { postId: p.id }
+                    })} style={styles.button}>
                       <Image
                         source={require('../../assets/Comment.png')}
                         style={{ width: 20, height: 20, marginLeft: 6 }}
@@ -111,12 +116,13 @@ class Home extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 12,
     flex: 1,
   },
   card: {
     backgroundColor: '#fff',
     marginBottom: 10,
+    marginRight: 10,
+    marginLeft: 10,
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
@@ -136,4 +142,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Home;
+export default Home;
